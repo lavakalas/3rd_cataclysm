@@ -4,13 +4,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/signal.h>
 
 #include "connection.h"
 
 int main(int argc, char *argv[]) {
     int ret;
     int data_socket;
-    ssize_t r, w;
+    ssize_t r;
     struct sockaddr_un addr;
     char buffer[BUFFER_SIZE];
 
@@ -34,21 +35,6 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    for (int i = 1; i < argc; ++i){
-        w = write(data_socket, argv[i], sizeof(argv[i]) + 1);
-        if (w == -1){
-            perror("clien_socket_write");
-            break;
-        }
-    }
-
-    strcpy(buffer, "END");
-    w = write(data_socket, buffer, strlen(buffer) + 1);
-    if (w == -1){
-        perror("clien_socket_write");
-        exit(1);
-    }
-    
     r = read(data_socket, buffer, sizeof(buffer));
 
     if (r == -1){
@@ -58,7 +44,9 @@ int main(int argc, char *argv[]) {
 
     buffer[sizeof(buffer) - 1] = 0;
     
-    printf("Server response is %s\n", buffer);
+    printf("Server PID is %s\n", buffer);
+
+    kill(atoi(buffer), SIGUSR1);
     
     close(data_socket);
     exit(0);
