@@ -10,8 +10,9 @@
 
 int main(int argc, char *argv[]) {
     int ret;
+    int pid;
     int data_socket;
-    ssize_t r;
+    ssize_t r, w;
     struct sockaddr_un addr;
     char buffer[BUFFER_SIZE];
 
@@ -45,8 +46,17 @@ int main(int argc, char *argv[]) {
     buffer[sizeof(buffer) - 1] = 0;
     
     printf("Server PID is %s\n", buffer);
-
-    kill(atoi(buffer), SIGUSR1);
+    pid = atoi(buffer);
+    
+    sprintf(buffer, "%s", "CAPTURED PID");
+    w = write(data_socket, buffer, sizeof(buffer));
+    if (w == -1){
+        perror("client_socket_write");
+        exit(1);
+    }
+    
+    sleep(1);
+    kill(pid, SIGUSR1);
     
     close(data_socket);
     exit(0);

@@ -69,7 +69,7 @@ int main (void) {
         perror("server_signal_handler");
         exit(1);
     }
- 
+
     for(;;){
         r = read(data_socket, buffer, sizeof(buffer));
         if (r == -1){
@@ -87,7 +87,6 @@ int main (void) {
     for(;;){
         sleep(1);
     }
-    unlink(SOCKET_NAME);
-    exit(0);
 
+    return 0;
 }
